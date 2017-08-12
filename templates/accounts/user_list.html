@@ -1,0 +1,414 @@
+{% extends 'navi/index.html' %}
+
+ {% block content %}
+     {% block js_content %}
+<script src="/static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+     <script src="/static/ace/assets/js/bootstrap.min.js"></script>
+   <script src="/static/layer/layer.js"></script>
+    <script src="/static/plugins/bootstrap-tables/bootstrap-table.js"></script>
+
+     <script src="/static/plugins/bootbox/bootbox.min.js"></script>
+
+         <script src="/static/plugins/bootstrap-tables/locale/bootstrap-table-zh-CN.js"></script>
+          <script src="/static/plugins/jqueryfrom/jquery.form.js"></script>
+         <script src="/static/js/Validform_v5.3.2_min.js"></script>
+
+<link rel="stylesheet" href="/static/plugins/bootstrap-tables/bootstrap-table.css">
+
+{% endblock js_content%}
+<div class="main-content-inner">
+					<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+						<ul class="breadcrumb">
+							<li>
+								<i class="ace-icon fa fa-home home-icon"></i>
+								<a href="#">首页</a>
+							</li>
+							<li class="active">用户信息</li>
+						</ul><!-- /.breadcrumb -->
+
+						<div class="nav-search" id="nav-search">
+							<form class="form-search">
+								<span class="input-icon">
+									<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+									<i class="ace-icon fa fa-search nav-search-icon"></i>
+								</span>
+							</form>
+						</div><!-- /.nav-search -->
+					</div>
+
+<div class="content-wrapper">
+<div class="panel panel-default">
+    <div class="panel-body">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="box">
+                <div class="box-header">
+                    <div class="col-sm-2" style="padding-left: 0">
+						 <a href="#"><li class="btn btn-success add_user" ><b>添加用户</b></li></a>
+                  </div>
+                </div>
+
+
+
+
+
+        <form action="" method="post" id="user_form" >
+                {% csrf_token %}
+
+
+                <!-- /.box-header -->
+                <div class="box-body">
+                  <table class="table table-striped table-bordered" id="dataform">
+                      <thead>
+                        <tr>
+                            <th>账号</th>
+                            <th>姓名</th>
+                            <th>Email</th>
+                            <th>状态</th>
+                            <th>角色</th>
+                            <th>最后登录时间</th>
+                            <th>操作</th>
+                        </tr>
+                      </thead>
+                            <tbody>
+                                {% for i in all_user %}
+                                    <tr class="even gradeX">
+                                        <td>{{ i.username }}</td>
+                                        <td>{{ i.nickname|default:"----" }}</td>
+                                        <td>{{ i.email }}</td>
+                                        <td>
+                                            {% if i.is_active %}
+                                                <span class="label label-success">启用</span>
+                                            {% else %}
+                                                <span class="label label-default">禁用</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ i.role|default:"----" }}</td>
+                                        <td>{{ i.last_login|date:"Y-m-d H:i:s" }}</td>
+                                        <td class="text-center" data-editable='false'>
+{#                                        <a href="{% url 'user_edit' %}?id={{ host.id }}" class="btn btn-xs btn-info">编辑</a>#}
+                                        <a href="#"><li class="btn btn-sm btn-info edit_info" onclick="" value="{{ i.id }}">编辑</li></a>
+
+                                            <a href="#"> <li class="btn btn-sm btn-danger user_del" value="{{ i.id }}">删除</li></a>
+
+                                    </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                  </table>
+                </div>
+
+
+
+        </form>
+        </div>
+    </section>
+
+ <!-- 模态框（Modal） -->
+<div class="modal fade" id="editmodel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					编辑信息
+				</h4>
+			</div>
+			<div class="modal-body">
+
+				<form class="form-horizontal" role="form" method="post" action="{% url 'update_sure' %}" id="updateform">
+            {% csrf_token %}
+
+              <div class="box-body">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 账号： </label>
+										<div class="col-sm-9">
+											<input type="text" id="username" name="username" placeholder="账号" class="col-xs-10 col-sm-5" readonly="true" />
+										</div>
+            </div>
+                  <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名： </label>
+
+										<div class="col-sm-9">
+											<input type="text" id="nickname" name="nickname" placeholder="姓名" class="col-xs-10 col-sm-5" />
+										</div>
+            </div>
+                  <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 状态： </label>
+
+										            <label style="padding-left:10px">
+														<input  name="status" class="ace ace-switch" type="checkbox" id="status" />
+														<span class="lbl"></span>
+													</label>
+            </div>
+                  <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 邮箱： </label>
+
+										<div class="col-sm-9">
+											<input type="email" id="mail" name="email" placeholder="邮箱" class="col-xs-10 col-sm-5" datatype="e" />
+										</div>
+            </div>
+                  <div class="form-group" >
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 角色： </label>
+
+										<div class="col-sm-9">
+											<input type="text" id="role" name="role" placeholder="角色" class="col-xs-10 col-sm-5" readonly='true' />
+										</div>
+            </div>
+                  <div class="form-group" >
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 密码： </label>
+
+										<div class="col-sm-9">
+											<input type="password" name="changpwd" id="changpwd" placeholder="密码" class="col-xs-10 col-sm-5"  datatype="*6-15" errormsg="密码范围在6~15位之间！"/>
+										</div>
+            </div>
+            <input id='id_form' type='hidden' name='id' readonly='true' >
+
+              </div>
+
+    </form>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default"
+						data-dismiss="modal">关闭
+				</button>
+				<button type="button" class="btn btn-primary update_sure">
+					提交更改
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="adduermodel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					请输入信息
+				</h4>
+			</div>
+			<div class="modal-body">
+
+				<form class="form-horizontal" role="form" method="post" action="{% url 'add_user' %}" id="adduserform">
+            {% csrf_token %}
+
+              <div class="box-body">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 账号： </label>
+										<div class="col-sm-9">
+											<input type="text" id="ausername" name="username" placeholder="账号" class="col-xs-10 col-sm-5"  />
+										</div>
+            </div>
+                  <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 姓名： </label>
+
+										<div class="col-sm-9">
+											<input type="text" id="anickname" name="nickname" placeholder="姓名" class="col-xs-10 col-sm-5" />
+										</div>
+            </div>
+                  <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 状态： </label>
+
+										            <label style="padding-left:10px">
+														<input  name="status" class="ace ace-switch" type="checkbox" id="astatus" />
+														<span class="lbl"></span>
+													</label>
+            </div>
+                  <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 邮箱： </label>
+
+										<div class="col-sm-9">
+											<input type="email" id="amail" name="email" placeholder="邮箱" class="col-xs-10 col-sm-5" datatype="e"/>
+										</div>
+            </div>
+                  <div class="form-group" >
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 角色： </label>
+
+										<div class="col-sm-9">
+											<input type="text" id="arole" name="role" placeholder="角色" class="col-xs-10 col-sm-5" readonly='true' />
+										</div>
+            </div>
+                  <div class="form-group" >
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 密码： </label>
+
+										<div class="col-sm-9">
+											<input type="password" name="achangpwd" id="changpwd" placeholder="密码" class="col-xs-10 col-sm-5" datatype="*6-15" errormsg="密码范围在6~15位之间！" />
+										</div>
+            </div>
+            <input id='id_form' type='hidden' name='id' readonly='true' >
+
+              </div>
+
+    </form>
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default"
+						data-dismiss="modal">关闭
+				</button>
+				<button type="button" class="btn btn-primary adduser_sure">
+					确认添加
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+
+        <!-- /.content -->
+{#用于接收user_edit.html中layui子层的传值#}
+<input id="handle_status" value="" hidden="hidden">
+</div>
+</div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#updateForm').Validform({tiptype:3})
+        $('#adduserform').Validform({tiptype:3})
+
+    })
+
+
+</script>
+
+
+<script>
+    $(document).ready(function(){
+
+          $('.edit_info').click(function(){
+              $('#editmodel').modal('show');
+              var id=$(this).attr('value')
+              var url = "/accounts/userupdate_msg?id="+id
+              $.getJSON(url,function(data){
+                  if(data['code']==0) {
+                      var dataObj = eval("(" +JSON.stringify( data )+ ")")
+                   $.each(dataObj.spec_user,function(t,item){
+                       $('#id_form').val(item.id);
+                       $("#username").val(item.username);
+                       $("#nickname").val(item.nickname);
+                        $("#mail").val(item.email);
+                       $("#role").val(item.role);
+                       $("#status").attr("checked",item.is_active)
+                         $("#changpwd").val("")
+                   })
+
+                  }else{
+                      bootbox.alert("失败，请刷新")
+
+                  }
+                  });
+
+                  });
+            });
+
+    $('.update_sure').click(function () {
+        var str=$('#updateform').formSerialize()
+        $.post('/accounts/update_sure/',str,function(data){
+            var dataObj = eval("(" +JSON.stringify( data )+ ")")
+            if(dataObj['code'] == 0){
+               bootbox.alert("更新成功")
+                location.href='/accounts/userlist'
+
+            }else{
+                bootbox.alert("失败，请刷新")
+
+            }
+
+        })
+
+    })
+</script>
+
+<script>
+$(document).ready(function(){
+    $('.add_user').click(function() {
+        $('#adduermodel').modal('show');
+        $("#astatus").attr("checked", true)
+    });
+     });
+
+
+
+ $('.adduser_sure').click(function () {
+        var str=$('#adduserform').formSerialize()
+        $.post('/accounts/add_user/',str,function(data){
+            var dataObj = eval("(" +JSON.stringify( data )+ ")")
+            if(dataObj['code'] == 0){
+               bootbox.alert("更新成功")
+                location.href='/accounts/userlist'
+
+            }else{
+                bootbox.alert("失败，请刷新")
+
+            }
+
+        })
+     })
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+     <script>
+
+$('#dataform').bootstrapTable({
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+        });
+
+     </script>
+     <script>
+      $(document).ready(function(){
+        $('.user_del').click(function(){
+            id =$(this).attr('value')
+            str ="id="+id
+            bootbox.setLocale("zh_CN");
+            bootbox.confirm("确定删除?", function(result) {
+                if (result) {
+                    $.get('/accounts/userdel/',str,function (data) {
+                            bootbox.alert("删除成功")
+                            location.href='/accounts/userlist'
+                    })
+
+
+                }
+            });
+        });
+    });
+
+      </script>
+ {% endblock %}
