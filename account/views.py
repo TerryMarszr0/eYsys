@@ -93,17 +93,17 @@ def update_sure(request):
         uobj.set_password(password)
         updateuser.update(remark=remark)
         if request.POST.get('have_publish'):
-            updateuser.update(have_publish="1")
+            updateuser.update(have_publish=True)
         else:
-            updateuser.update(have_publish="0")
+            updateuser.update(have_publish=False)
         if request.POST.get('have_review'):
-            updateuser.update(have_review="1")
+            updateuser.update(have_review=True)
         else:
-            updateuser.update(have_review="0")
+            updateuser.update(have_review=False)
         if request.POST.get('have_test'):
-            updateuser.update(have_test="1")
+            updateuser.update(have_test=True)
         else:
-            updateuser.update(have_test="0")
+            updateuser.update(have_test=False)
         if request.POST.get('status'):
             updateuser.update(is_active=True)
         else:

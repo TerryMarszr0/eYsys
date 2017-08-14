@@ -8,6 +8,7 @@
     <script src="/static/plugins/bootstrap-tables/bootstrap-table.js"></script>
 
      <script src="/static/plugins/bootbox/bootbox.min.js"></script>
+         <script src="/static/plugins/iCheck/icheck.min.js"></script>
 
          <script src="/static/plugins/bootstrap-tables/locale/bootstrap-table-zh-CN.js"></script>
           <script src="/static/plugins/jqueryfrom/jquery.form.js"></script>
@@ -88,21 +89,21 @@
                                         <td>{{ i.email }}</td>
                                         <td>{{ i.ftp_path|default:"----" }}</td>
                                         <td>
-                                            {% if i.have_publish == "1" %}
+                                            {% if i.have_publish  %}
                                                 <span class="label label-success">启用</span>
                                             {% else %}
                                                 <span class="label label-default">禁用</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if i.have_review == "1" %}
+                                            {% if i.have_review %}
                                                 <span class="label label-success">启用</span>
                                             {% else %}
                                                 <span class="label label-default">禁用</span>
                                             {% endif %}
                                         </td>
                                      <td>
-                                            {% if i.have_test == "1" %}
+                                            {% if i.have_test %}
                                                 <span class="label label-success">启用</span>
                                             {% else %}
                                                 <span class="label label-default">禁用</span>
@@ -411,6 +412,7 @@
                            $("#uusername").val(item.username);
                              $("#id_form1").val(item.id)
 
+
                       })
                   }else{
                       bootbox.alert("获取用户失败")
@@ -425,7 +427,7 @@
              $.post('/accounts/updatepwd_sure/',str,function(data) {
                  var dataObj = eval("(" + JSON.stringify(data) + ")")
                  if (dataObj['code'] == 0) {
-                     bootbox.alert("更新成功")
+                      location.href='/accounts/userlist'
 
 
                  } else {
@@ -447,9 +449,12 @@
 
 <script>
     $(document).ready(function(){
+            $(".modal").on("hidden.bs.modal", function(){
+            location.reload();
+                });
+
 
           $('.edit_info').click(function(){
-              $('#editmodel').modal('show');
               var id=$(this).attr('value')
               var url = "/accounts/userupdate_msg?id="+id
               $.getJSON(url,function(data){
@@ -459,28 +464,15 @@
                        $('#id_form').val(item.id);
                        $("#username").val(item.username);
                        $("#nickname").val(item.nickname);
-                       if(item.have_publish=="1")
-                       {
-                           $("#have_publish").attr("checked",true)
-                       }else{
-                            $("#have_publish").attr("checked",false)
-                       }
-                        if(item.have_review=="1")
-                       {
-                           $("#have_review").attr("checked",true)
-                       }else{
-                            $("#have_review").attr("checked",false)
-                       }
-                       if(item.have_test=="1")
-                       {
-                           $("#have_test").attr("checked",true)
-                       }else{
-                            $("#have_test").attr("checked",false)
-                       }
+                       $("#have_publish").attr("checked",item.have_publish)
+                       $("#have_review").attr("checked",item.have_review)
+                       $("#have_test").attr("checked",item.have_test)
                         $("#remark").val(item.remark);
                         $("#mail").val(item.email);
                        $("#role").val(item.role);
                        $("#status").attr("checked",item.is_active)
+
+
 
                    })
 
@@ -489,6 +481,8 @@
 
                   }
                   });
+                     $('#editmodel').modal('show');
+
 
                   });
             });

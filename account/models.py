@@ -60,9 +60,9 @@ class UserInfo(AbstractBaseUser):
     role = models.ForeignKey(RoleList, null=True, blank=True)
     ftp_path = models.CharField(max_length=32,null=True)
     remark = models.CharField(max_length=32,null=True)
-    have_publish = models.CharField(max_length=4,default="1")
-    have_review = models.CharField(max_length=4,default="1")
-    have_test = models.CharField(max_length=4,default='1')
+    have_publish = models.BooleanField(default=False)
+    have_review = models.BooleanField(default=False)
+    have_test = models.BooleanField(default=False)
 
     objects = UserManager()
     USERNAME_FIELD = 'username'
