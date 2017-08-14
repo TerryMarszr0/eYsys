@@ -69,9 +69,14 @@
                             <th>账号</th>
                             <th>姓名</th>
                             <th>Email</th>
+                            <th>Ftp路径</th>
+                            <th>发布权限</th>
+                            <th>审查权限</th>
+                            <th>测试权限</th>
                             <th>状态</th>
                             <th>角色</th>
                             <th>最后登录时间</th>
+                            <th>备注</th>
                             <th>操作</th>
                         </tr>
                       </thead>
@@ -81,6 +86,29 @@
                                         <td>{{ i.username }}</td>
                                         <td>{{ i.nickname|default:"----" }}</td>
                                         <td>{{ i.email }}</td>
+                                        <td>{{ i.ftp_path|default:"----" }}</td>
+                                        <td>
+                                            {% if i.have_publish == "1" %}
+                                                <span class="label label-success">启用</span>
+                                            {% else %}
+                                                <span class="label label-default">禁用</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if i.have_review == "1" %}
+                                                <span class="label label-success">启用</span>
+                                            {% else %}
+                                                <span class="label label-default">禁用</span>
+                                            {% endif %}
+                                        </td>
+                                     <td>
+                                            {% if i.have_test == "1" %}
+                                                <span class="label label-success">启用</span>
+                                            {% else %}
+                                                <span class="label label-default">禁用</span>
+                                            {% endif %}
+                                        </td>
+
                                         <td>
                                             {% if i.is_active %}
                                                 <span class="label label-success">启用</span>
@@ -90,10 +118,11 @@
                                         </td>
                                         <td>{{ i.role|default:"----" }}</td>
                                         <td>{{ i.last_login|date:"Y-m-d H:i:s" }}</td>
+                                        <td>{{ i.remark|default:"----" }}</td>
                                         <td class="text-center" data-editable='false'>
 {#                                        <a href="{% url 'user_edit' %}?id={{ host.id }}" class="btn btn-xs btn-info">编辑</a>#}
-                                        <a href="#"><li class="btn btn-sm btn-info edit_info" onclick="" value="{{ i.id }}">编辑</li></a>
-
+                                        <a href="#"><li class="btn btn-sm btn-info edit_info" value="{{ i.id }}">编辑权限</li></a>
+                                            <a href="#"><li class="btn btn-sm btn-info update_pwd" value="{{ i.id }}">更新密码</li></a>
                                             <a href="#"> <li class="btn btn-sm btn-danger user_del" value="{{ i.id }}">删除</li></a>
 
                                     </td>
@@ -142,13 +171,37 @@
 										</div>
             </div>
                   <div class="form-group">
-                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 状态： </label>
+                  <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 状态： </label>
 
 										            <label style="padding-left:10px">
 														<input  name="status" class="ace ace-switch" type="checkbox" id="status" />
 														<span class="lbl"></span>
 													</label>
-            </div>
+                 </div>
+                   <div class="form-group">
+                  <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 发布： </label>
+
+										            <label style="padding-left:10px">
+														<input  name="have_publish" class="ace ace-switch" type="checkbox" id="have_publish" />
+														<span class="lbl"></span>
+													</label>
+                 </div>
+                   <div class="form-group">
+                  <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 审核： </label>
+
+										            <label style="padding-left:10px">
+														<input  name="have_review" class="ace ace-switch" type="checkbox" id="have_review" />
+														<span class="lbl"></span>
+													</label>
+                 </div>
+                   <div class="form-group">
+                  <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 测试： </label>
+
+										            <label style="padding-left:10px">
+														<input  name="have_test" class="ace ace-switch" type="checkbox" id="have_test" />
+														<span class="lbl"></span>
+													</label>
+                 </div>
                   <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 邮箱： </label>
 
@@ -163,16 +216,18 @@
 											<input type="text" id="role" name="role" placeholder="角色" class="col-xs-10 col-sm-5" readonly='true' />
 										</div>
             </div>
-                  <div class="form-group" >
-                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 密码： </label>
+
+                                <div class="form-group">
+                                      <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 备注： </label>
 
 										<div class="col-sm-9">
-											<input type="password" name="changpwd" id="changpwd" placeholder="密码" class="col-xs-10 col-sm-5"  datatype="*6-15" errormsg="密码范围在6~15位之间！"/>
+											<input type="text" id="remark" name="remark" placeholder="备注" class="col-xs-10 col-sm-5" />
 										</div>
             </div>
             <input id='id_form' type='hidden' name='id' readonly='true' >
 
               </div>
+
 
     </form>
 
@@ -231,6 +286,7 @@
 														<span class="lbl"></span>
 													</label>
             </div>
+
                   <div class="form-group">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 邮箱： </label>
 
@@ -271,7 +327,56 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="updatepasswd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					更新密码
+				</h4>
+			</div>
+			<div class="modal-body">
 
+				<form class="form-horizontal" role="form" method="post" action="#" id="updatepwdform">
+            {% csrf_token %}
+
+              <div class="box-body">
+
+
+                   <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 账号： </label>
+										<div class="col-sm-9">
+											<input type="text" id="uusername" name="username" placeholder="账号" class="col-xs-10 col-sm-5"  readonly="true" />
+										</div>
+            </div>
+                  <div class="form-group" >
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 密码： </label>
+
+										<div class="col-sm-9">
+											<input type="password" name="updatepwd" id="updatepwd" placeholder="密码" class="col-xs-10 col-sm-5"  datatype="*6-15" errormsg="密码范围在6~15位之间！"/>
+										</div>
+
+            </div>
+                  <input id='id_form1' type='hidden' name='id' readonly='true' >
+              </div>
+
+                </form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default"
+						data-dismiss="modal">关闭
+				</button>
+				<button type="button" class="btn btn-primary updatepwd_sure">
+					确认更新
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal --
 
 
 
@@ -285,12 +390,60 @@
     $(document).ready(function(){
         $('#updateForm').Validform({tiptype:3})
         $('#adduserform').Validform({tiptype:3})
+         $('#updatepasswd').Validform({tiptype:3})
 
     })
 
 
 </script>
+<script>
+    $(document).ready(function(){
+        $('.update_pwd').click(function(){
+            $("#updatepasswd").modal('show');
 
+                var id=$(this).attr('value')
+
+             var url = "/accounts/userupdate_msg?id="+id
+              $.getJSON(url,function(data) {
+                  if (data['code'] == 0) {
+                      var dataObj = eval("(" + JSON.stringify(data) + ")")
+                      $.each(dataObj.spec_user, function (t, item) {
+                           $("#uusername").val(item.username);
+                             $("#id_form1").val(item.id)
+
+                      })
+                  }else{
+                      bootbox.alert("获取用户失败")
+                  }
+              });
+
+
+        });
+
+        $('.updatepwd_sure').click(function () {
+             var str=$('#updatepwdform').formSerialize()
+             $.post('/accounts/updatepwd_sure/',str,function(data) {
+                 var dataObj = eval("(" + JSON.stringify(data) + ")")
+                 if (dataObj['code'] == 0) {
+                     bootbox.alert("更新成功")
+
+
+                 } else {
+                     bootbox.alert("失败，请刷新")
+
+
+                 }
+             });
+
+         });
+    })
+
+
+
+
+
+
+</script>
 
 <script>
     $(document).ready(function(){
@@ -306,10 +459,29 @@
                        $('#id_form').val(item.id);
                        $("#username").val(item.username);
                        $("#nickname").val(item.nickname);
+                       if(item.have_publish=="1")
+                       {
+                           $("#have_publish").attr("checked",true)
+                       }else{
+                            $("#have_publish").attr("checked",false)
+                       }
+                        if(item.have_review=="1")
+                       {
+                           $("#have_review").attr("checked",true)
+                       }else{
+                            $("#have_review").attr("checked",false)
+                       }
+                       if(item.have_test=="1")
+                       {
+                           $("#have_test").attr("checked",true)
+                       }else{
+                            $("#have_test").attr("checked",false)
+                       }
+                        $("#remark").val(item.remark);
                         $("#mail").val(item.email);
                        $("#role").val(item.role);
                        $("#status").attr("checked",item.is_active)
-                         $("#changpwd").val("")
+
                    })
 
                   }else{
@@ -344,6 +516,9 @@ $(document).ready(function(){
     $('.add_user').click(function() {
         $('#adduermodel').modal('show');
         $("#astatus").attr("checked", true)
+         $("#ahave_publish").attr("checked", true)
+         $("#ahave_review").attr("checked", true)
+         $("#ahave_test").attr("checked", true)
     });
      });
 

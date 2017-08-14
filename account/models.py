@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from __future__ import unicode_literals
 
 from django.db import models
@@ -57,6 +58,11 @@ class UserInfo(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     nickname = models.CharField(max_length=64, null=True)
     role = models.ForeignKey(RoleList, null=True, blank=True)
+    ftp_path = models.CharField(max_length=32,null=True)
+    remark = models.CharField(max_length=32,null=True)
+    have_publish = models.CharField(max_length=4,default="1")
+    have_review = models.CharField(max_length=4,default="1")
+    have_test = models.CharField(max_length=4,default='1')
 
     objects = UserManager()
     USERNAME_FIELD = 'username'
@@ -91,7 +97,11 @@ class UserInfo(AbstractBaseUser):
             "is_active":self.is_active,
             "is_superuser":self.is_superuser,
             "nickname":self.nickname,
-            "role":self.role
+            "role":self.role,
+            "have_publish":self.have_publish,
+            "have_review":self.have_review,
+            "have_test":self.have_test,
+            "remark":self.remark,
 
 
 

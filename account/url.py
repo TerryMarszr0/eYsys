@@ -11,5 +11,6 @@ urlpatterns = [
     url(r'^userupdate_msg/$',views.userupdate_msg,name='userupdate_msg'),
     url(r'^update_sure/$',views.update_sure,name='update_sure'),
     url(r'^add_user/$', views.add_user, name='add_user'),
+    url(r'^updatepwd_sure/$', views.updatepwd_sure, name='updatepwd_sure'),
 
 ]

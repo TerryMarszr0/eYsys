@@ -81,15 +81,29 @@ def update_sure(request):
         nickname = request.POST.get('nickname')
         email = request.POST.get('email')
         role = request.POST.get('role')
+        remark = request.POST.get('remark')
         id = request.POST.get('id')
         password = request.POST.get('changpwd')
         updateuser = get_user_model().objects.filter(id=id)
+
         updateuser.update(username=username)
         updateuser.update(nickname=nickname)
-
         updateuser.update(email=email)
-
-        updateuser.update(password=password)
+        uobj = UserInfo.objects.get(username__exact=username)
+        uobj.set_password(password)
+        updateuser.update(remark=remark)
+        if request.POST.get('have_publish'):
+            updateuser.update(have_publish="1")
+        else:
+            updateuser.update(have_publish="0")
+        if request.POST.get('have_review'):
+            updateuser.update(have_review="1")
+        else:
+            updateuser.update(have_review="0")
+        if request.POST.get('have_test'):
+            updateuser.update(have_test="1")
+        else:
+            updateuser.update(have_test="0")
         if request.POST.get('status'):
             updateuser.update(is_active=True)
         else:
@@ -110,10 +124,28 @@ def add_user(request):
         email=request.POST.get('email')
         password=request.POST.get('password')
         if request.POST.get('status'):
-            get_user_model().objects.create_user(username=username,is_active=True, nickname=nickname, email=email, password=password)
+            get_user_model().objects.create_user(username=username, is_active=True, nickname=nickname, email=email,
+                                                 password=password)
+        else:
+            get_user_model().objects.create_user(username=username, is_active=False, nickname=nickname, email=email,
+                                                 password=password)
+
+
         kwargs = {
             'code': 0,
         }
         return HttpResponse(json.dumps(kwargs), content_type="application/json")
 
 
+def updatepwd_sure(request):
+    if request.POST:
+        password= request.POST.get("updatepwd")
+        username=request.POST.get("username")
+        ids = request.POST.get('id')
+        uobj = get_user_model().objects.get(id=ids)
+        uobj.set_password(password)
+        uobj.save()
+        kwargs = {
+            'code': 0,
+        }
+        return HttpResponse(json.dumps(kwargs), content_type="application/json")
